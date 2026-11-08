@@ -129,3 +129,170 @@ Instead of a plain data table, we built an interactive **AG Grid & AG Charts Stu
          [Escrow Guardrail Holds Funds]            [PayPal Payouts v1 Dispatched]
            Status: DELIVERABLE_CHANGES_REQUESTED     POST /v1/payments/payouts
            Lists missing code requirements           Transfers USD directly to Freelancer
+
+
+
+## 🛠️ Complete Setup and Run Instructions for Judges
+
+Judges can evaluate **PayPact AI** by accessing the live hosted application or running the source code locally.
+
+### 🚀 Option A: Test the Live Hosted Demo (Instant)
+
+**Live Web App:** https://paypact-ai.onrender.com
+
+**Testing Guide:**
+
+Use the **⚡ Interactive Demo Guide** at the top of the dashboard to explore the complete five-step autonomous payment lifecycle:
+
+1. **Client Offer** — Create and submit a project offer.
+2. **Freelancer Acceptance & Auto-Invoice** — Accept the offer and automatically generate a PayPal invoice.
+3. **Escrow Funding** — Simulate funding the project through PayPal Sandbox.
+4. **AI Code Audit Guardrail** — Run an AI-powered code audit before payment release.
+5. **PayPal Payout** — Execute the payment workflow after successful verification.
+
+> **Note:** The demo uses PayPal Sandbox for testing. No real money is transferred.
+
+---
+
+### 💻 Option B: Local Repository Setup & Execution
+
+#### Prerequisites
+
+Ensure you have the following:
+
+- **Node.js:** Version 18.0.0 or higher
+- **npm:** Included with Node.js
+- **Git:** For cloning the repository
+- **PayPal Developer Account:** [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/)
+- **OpenAI API Key:** [OpenAI Platform](https://platform.openai.com/api-keys)
+
+For PayPal, generate Sandbox credentials under **Apps & Credentials → Sandbox**.
+
+Ensure your Sandbox application has access to the required **Invoicing** and **Payouts** capabilities.
+
+#### Step 1: Clone the Repository
+
+Open Git Bash, PowerShell, or your preferred terminal.
+
+```bash
+git clone https://github.com/Obumezi/paypact-ai.git
+cd paypact-ai
+```
+
+#### Step 2: Install Dependencies
+
+Install the required Node.js packages:
+
+```bash
+npm install
+```
+
+#### Step 3: Configure Environment Variables
+
+Create a `.env` file from the provided `.env.example` template.
+
+**Linux / macOS / Git Bash:**
+
+```bash
+cp .env.example .env
+```
+
+**Windows PowerShell:**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Open the `.env` file and configure your credentials:
+
+```env
+PORT=3000
+
+# PayPal Sandbox Configuration
+PAYPAL_API_BASE=https://api-m.sandbox.paypal.com
+PAYPAL_CLIENT_ID=your_paypal_sandbox_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_sandbox_client_secret
+
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4o-mini
+```
+
+> 🔒 **Security Notice:** Never commit your `.env` file or expose API keys publicly. Ensure `.env` is included in `.gitignore`.
+
+#### Step 4: Start the Application
+
+Start the Express server:
+
+```bash
+node server.js
+```
+
+Alternatively, run the development server with automatic reload:
+
+```bash
+npx nodemon server.js
+```
+
+#### Step 5: Access the Application
+
+Once the server starts successfully, open:
+
+**http://localhost:3000**
+
+You can now interact with the PayPact AI dashboard and test the complete autonomous payment workflow.
+
+---
+
+
+### ✅ Quick Verification Checklist
+
+After launching PayPact AI, verify that:
+
+- [ ] The dashboard loads successfully.
+- [ ] The Interactive Demo Guide is accessible.
+- [ ] A client can create a project offer.
+- [ ] A freelancer can accept the offer.
+- [ ] A PayPal Sandbox invoice can be generated.
+- [ ] The escrow funding workflow operates correctly.
+- [ ] The AI code audit can evaluate submitted work.
+- [ ] The PayPal Sandbox payout workflow can be tested.
+
+---
+
+### 🔗 Important Links
+
+| Resource | Link |
+|---|---|
+| Live Application | https://paypact-ai.onrender.com |
+| GitHub Repository | https://github.com/Obumezi/paypact-ai |
+
+
+
+---
+
+### 💡 Troubleshooting
+
+**Application fails to start**
+
+- Confirm Node.js 18+ is installed.
+- Run `npm install` to install missing dependencies.
+- Verify that your `.env` file exists and contains the required variables.
+- Check that port `3000` is available.
+
+**PayPal API authentication fails**
+
+- Verify your PayPal Sandbox Client ID and Client Secret.
+- Ensure `PAYPAL_API_BASE` points to the Sandbox environment.
+- Confirm the required API capabilities are available.
+
+**AI audit fails**
+
+- Verify your OpenAI API key.
+- Ensure your OpenAI account has sufficient API credits.
+- Confirm the configured model is accessible to your API account.
+
+
+---
+
+**Built for developers, freelancers, and clients who want smarter, automated, and more secure milestone-based payments.**
