@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayPact AI — Autonomous Negotiation, PayPal Escrow & AG Grid Studio</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- AG Grid & AG Charts Community Bundles (Sponsor Tools) -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ag-charts-community/dist/umd/ag-charts-community.min.js"></script>
+  <style>
+    body {
+      background-color: #070b14;
+      color: #f1f5f9;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(51, 65, 85, 0.75);
+      backdrop-filter: blur(12px);
+    }
+    .step-active {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+    }
+    .step-done {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
+    .widget-glow-amber {
+      box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.35);
+      border-color: rgba(245, 158, 11, 0.7) !important;
+    }
+    .widget-glow-rose {
+      box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.35);
+      border-color: rgba(244, 63, 94, 0.7) !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navbar -->
+  <header class="border-b border-slate-800 bg-slate-950/90 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-lg shadow-lg shadow-blue-500/20">
+          PP
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-lg tracking-tight text-white">PayPact AI</h1>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 font-medium">
+              PayPal Sandbox + OpenAI + AG Grid Studio
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">Autonomous Freelance Negotiation, Escrow Invoicing, Nudge-Bot & Verified Payouts</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div id="paypalHealthBadge" class="text-xs px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse" id="healthDot"></span>
+          <span id="healthText">Checking PayPal Sandbox...</span>
+        </div>
+        <div class="flex items-center bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1">
+          <span class="text-xs text-slate-400 mr-2">Active Deal ID:</span>
+          <input id="dealIdInput" type="text" value="deal-201" class="bg-transparent text-xs font-mono text-blue-400 font-semibold w-24 focus:outline-none" />
+        </div>
+        <button onclick="createNewDeal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+          + New Deal
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 4-Stage Autonomous Pipeline Stepper -->
+  <section class="max-w-7xl w-full mx-auto px-4 pt-5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="pipelineStepper">
+      <div id="step-1" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold">1</div>
+        <div>
+          <div class="text-xs font-semibold">AI Negotiation</div>
+          <div class="text-[11px] text-slate-400">Extract 5 Contract Terms</div>
+        </div>
+      </div>
+      <div id="step-2" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold">2</div>
+        <div>
+          <div class="text-xs font-semibold">Escrow Invoiced</div>
+          <div class="text-[11px] text-slate-400">PayPal Invoicing v2 API</div>
+        </div>
+      </div>
+      <div id="step-3" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold">3</div>
+        <div>
+          <div class="text-xs font-semibold">Escrow Funded</div>
+          <div class="text-[11px] text-slate-400">Vault Locked (PAID)</div>
+        </div>
+      </div>
+      <div id="step-4" class="p-3 rounded-xl border border-slate-800 bg-slate-900/60 flex items-center gap-3">
+        <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold">4</div>
+        <div>
+          <div class="text-xs font-semibold">AI Audit & Payout</div>
+          <div class="text-[11px] text-slate-400">PayPal Payouts v1 API</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Grid -->
+  <main class="max-w-7xl w-full mx-auto px-4 py-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+    <!-- Left Column: Multi-Party AI Negotiation Chat (7 cols) -->
+    <div class="lg:col-span-7 glass-card rounded-2xl flex flex-col h-[560px]">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h2 class="font-semibold text-sm text-white">Autonomous Negotiation & Nudge-Bot Feed</h2>
+          <p class="text-xs text-slate-400">OpenAI mediates scope, dispatches PayPal Invoices, and sends friendly nudges</p>
+        </div>
+        <div class="flex gap-1.5">
+          <button onclick="fillDemoMessage('client')" class="text-[11px] px-2.5 py-1 rounded bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 transition">
+            Demo: Client Offer
+          </button>
+          <button onclick="fillDemoMessage('freelancer')" class="text-[11px] px-2.5 py-1 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 transition">
+            Demo: Freelancer Accept
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat Messages Container -->
+      <div id="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-3">
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+          👋 <strong>PayPact AI Mediator:</strong> Welcome! Click <em>"Demo: Client Offer"</em> and <em>"Demo: Freelancer Accept"</em> above to lock a deal and generate a live PayPal Sandbox Invoice.
+        </div>
+      </div>
+
+      <!-- Chat Input Bar -->
+      <form onsubmit="sendNegotiationMessage(event)" class="p-3 border-t border-slate-800 bg-slate-950/60 rounded-b-2xl">
+        <div class="flex items-center gap-2">
+          <select id="senderRole" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
+            <option value="Client">💼 Acting as: Client</option>
+            <option value="Freelancer">💻 Acting as: Freelancer</option>
+          </select>
+          <input
+            id="chatInput"
+            type="text"
+            placeholder="Type negotiation message or contract terms..."
+            class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500"
+          />
+          <button
+            id="sendBtn"
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium px-4 py-2 rounded-lg transition disabled:opacity-50"
+          >
+            Send Turn
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right Column: Live Contract State, PayPal Escrow Controls & Deliverable Auditor (5 cols) -->
+    <div class="lg:col-span-5 flex flex-col gap-4">
+
+      <!-- Card 1: Structured Contract State -->
+      <div class="glass-card rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Live Extracted Contract JSON</h3>
+          <span id="dealStatusBadge" class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+            NEGOTIATING
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5 text-xs">
+          <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+            <div class="text-[10px] text-slate-500">Project Title</div>
+            <div id="termTitle" class="font-medium text-slate-200 truncate mt-0.5">—</div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+            <div class="text-[10px] text-slate-500">Agreed Escrow Amount</div>
+            <div id="termAmount" class="font-bold text-emerald-400 mt-0.5">—</div>
+          </div>
+          <div class="col-span-2 p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+            <div class="text-[10px] text-slate-500">Required Deliverable Milestone (AI Audit Criteria)</div>
+            <div id="termMilestone" class="font-medium text-slate-300 mt-0.5 text-[11px]">—</div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+            <div class="text-[10px] text-slate-500">Client PayPal (Payer)</div>
+            <div id="termClientEmail" class="font-mono text-[11px] text-slate-300 truncate mt-0.5">—</div>
+          </div>
+          <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+            <div class="text-[10px] text-slate-500">Freelancer PayPal (Payee)</div>
+            <div id="termFreelancerEmail" class="font-mono text-[11px] text-slate-300 truncate mt-0.5">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: PayPal Escrow Vault & Nudge-Bot Action -->
+      <div class="glass-card rounded-2xl p-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">PayPal Escrow Vault (Invoicing v2)</h3>
+          <span id="invoiceStatusBadge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+            NO INVOICE
+          </span>
+        </div>
+
+        <div id="invoiceDetailsBox" class="text-xs text-slate-400 space-y-1.5">
+          <p class="text-[11px]">Lock contract terms in chat to automatically generate & send a PayPal Sandbox Invoice.</p>
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button
+            id="nudgeClientBtn"
+            onclick="triggerFriendlyNudge(getActiveDealId())"
+            disabled
+            class="bg-amber-500/20 hover:bg-amber-500/30 disabled:opacity-40 text-amber-300 border border-amber-500/40 text-xs font-semibold py-2 px-3 rounded-lg transition"
+          >
+            👋 Nudge-Bot Reminder
+          </button>
+          <button
+            id="fundEscrowBtn"
+            onclick="fundEscrow(getActiveDealId())"
+            disabled
+            class="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-semibold py-2 px-3 rounded-lg transition"
+          >
+            💳 Confirm Escrow Payment
+          </button>
+          <a
+            id="viewInvoiceLink"
+            href="#"
+            target="_blank"
+            class="hidden bg-slate-800 hover:bg-slate-700 text-blue-400 text-xs font-medium py-2 px-3 rounded-lg border border-slate-700 transition"
+          >
+            PayPal ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3: AI GitHub Deliverable Verification & PayPal Payouts v1 -->
+      <div class="glass-card rounded-2xl p-4 flex-1 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">AI Deliverable Auditor & Payout</h3>
+            <div class="flex gap-1">
+              <button onclick="fillDemoProof('fail')" class="text-[10px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                Demo: Bad Code
+              </button>
+              <button onclick="fillDemoProof('pass')" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                Demo: Valid PR
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <input
+              id="githubUrlInput"
+              type="text"
+              placeholder="GitHub PR / Commit / Raw File URL (optional)"
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500"
+            />
+            <textarea
+              id="proofTextInput"
+              rows="2"
+              placeholder="Paste deliverable code snippet, PR diff, or deployment proof for OpenAI verification..."
+              class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs font-mono text-emerald-300 focus:outline-none focus:border-blue-500"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="mt-2.5 space-y-2">
+          <button
+            id="verifyPayoutBtn"
+            onclick="verifyAndReleasePayout()"
+            disabled
+            class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white text-xs font-semibold py-2 px-4 rounded-lg transition"
+          >
+            🔍 Run AI Deliverable Audit & Release PayPal Payout
+          </button>
+          <div id="payoutResultBanner" class="hidden p-2 rounded-lg text-xs border"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- AG GRID STUDIO & CUSTOM WIDGETS COMMAND CENTER (SPONSOR PRIZE SHOWCASE) -->
+  <!-- ===================================================================== -->
+  <section class="max-w-7xl w-full mx-auto px-4 pb-10 space-y-4">
+
+    <!-- 1. Custom KPI & Friendly Scoreboard Widget Ribbon -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="glass-card rounded-2xl p-4 border-l-4 border-l-blue-500">
+        <div class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Total Contract Volume</div>
+        <div id="kpiTotalVolume" class="text-2xl font-bold text-white mt-1">$0.00</div>
+        <div id="kpiDealCount" class="text-xs text-slate-400 mt-1">0 active deals tracked in AG Grid</div>
+      </div>
+
+      <div id="nudgeScoreboardWidget" class="glass-card rounded-2xl p-4 border-l-4 border-l-amber-400 transition-all">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] uppercase tracking-wider text-amber-300 font-semibold">👋 Friendly Nudge Scoreboard</span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">Unpaid Invoices</span>
+        </div>
+        <div id="kpiUnpaidAmount" class="text-2xl font-bold text-amber-300 mt-1">$0.00</div>
+        <div id="kpiUnpaidNote" class="text-xs text-slate-400 mt-1">All clients caught up! 🎉</div>
+      </div>
+
+      <div id="anomalyAuditWidget" class="glass-card rounded-2xl p-4 border-l-4 border-l-rose-500 transition-all">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] uppercase tracking-wider text-rose-300 font-semibold">🛡️ AI Audit & Anomaly Watch</span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300">Escrow Guard</span>
+        </div>
+        <div id="kpiAuditPassRate" class="text-2xl font-bold text-white mt-1">—</div>
+        <div id="kpiAuditFlags" class="text-xs text-slate-400 mt-1">0 failed PR deliverables blocked</div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4 border-l-4 border-l-emerald-500">
+        <div class="text-[11px] uppercase tracking-wider text-emerald-300 font-semibold">PayPal Payouts Dispatched</div>
+        <div id="kpiPayoutTotal" class="text-2xl font-bold text-emerald-400 mt-1">$0.00</div>
+        <div id="kpiPayoutCount" class="text-xs text-slate-400 mt-1">0 verified batches settled</div>
+      </div>
+    </div>
+
+    <!-- 2. AG Grid Studio Natural-Language Agent + Live Grid & AG Charts Layout -->
+    <div class="glass-card rounded-2xl p-5 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-base font-bold text-white">AG Grid Studio — Autonomous Finance & Nudge-Bot Workspace</h3>
+            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium">
+              Custom Widgets + AG Charts + NL Agent
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Talk to the Studio Agent to filter, sort, or switch widget modes—or trigger Nudge-Bot reminders directly from any unpaid row.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="resetStudioGridFilters()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300 transition">
+            Reset View
+          </button>
+          <button onclick="refreshDealsLedger()" class="text-xs bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 px-3 py-1.5 rounded-lg transition">
+            ↻ Sync Live Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Natural-Language Finance Agent Bar -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 space-y-2">
+        <form onsubmit="runStudioGridAgent(event)" class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-semibold text-indigo-400 px-2">✨ Studio Agent:</span>
+          <input
+            id="gridAgentInput"
+            type="text"
+            placeholder="Ask e.g. 'Show unpaid invoices needing a friendly nudge' or 'Flag failed AI code audits'..."
+            class="flex-1 min-w-[240px] bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500"
+          />
+          <button
+            id="gridAgentBtn"
+            type="submit"
+            class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition"
+          >
+            Execute on Grid
+          </button>
+        </form>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-[11px] text-slate-500 mr-1">1-Click Agent Prompts:</span>
+            <button onclick="quickGridPrompt('Show unpaid invoices that need a friendly nudge scoreboard')" class="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              👋 Who Still Owes What? (Nudge Scoreboard)
+            </button>
+            <button onclick="quickGridPrompt('Filter to failed deliverable audits and highlight anomalies')" class="text-[11px] px-2.5 py-0.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30">
+              🚨 Flag Failed AI Audits
+            </button>
+            <button onclick="quickGridPrompt('Show completed payouts sorted by highest amount')" class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              💰 Completed Payouts
+            </button>
+          </div>
+          <div id="gridAgentReply" class="text-xs text-indigo-300 italic"></div>
+        </div>
+      </div>
+
+      <!-- Split Layout: AG Grid Custom Widget Table (8 cols) + AG Charts Live Donut Widget (4 cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        <div class="lg:col-span-8">
+          <div id="escrowLedgerGrid" class="w-full h-72 rounded-xl overflow-hidden"></div>
+        </div>
+        <div class="lg:col-span-4 bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-semibold text-slate-300">Escrow & Payout Breakdown</span>
+            <span class="text-[10px] font-mono text-slate-400">AG Charts</span>
+          </div>
+          <div id="escrowDistributionChart" class="w-full h-60"></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <script>
+    let gridApi = null;
+    let chartInstance = null;
+
+    // =========================================================================
+    // 1. Initialize AG Grid with Custom Widget Cell Renderers & Quartz Dark Theme
+    // =========================================================================
+    const gridOptions = {
+      theme: agGrid.themeQuartz.withParams({
+        backgroundColor: '#0b1120',
+        headerBackgroundColor: '#1e293b',
+        foregroundColor: '#e2e8f0',
+        borderColor: '#1e293b',
+        rowHoverColor: '#1e293b',
+      }),
+      defaultColDef: {
+        sortable: true,
+        filter: true,
+        resizable: true,
+      },
+      rowHeight: 46,
+      columnDefs: [
+        {
+          field: 'dealId',
+          headerName: 'Deal',
+          width: 95,
+          cellRenderer: (params) =>
+            `<span class="font-mono text-xs font-semibold text-blue-400 cursor-pointer hover:underline" onclick="switchDeal('${params.value}')">${params.value}</span>`,
+        },
+        {
+          field: 'status',
+          headerName: 'Escrow Pipeline Widget',
+          width: 175,
+          cellRenderer: (params) => {
+            const s = params.value;
+            const styles = {
+              NEGOTIATING: 'bg-slate-800 text-slate-300 border-slate-700',
+              ESCROW_INVOICED: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+              ESCROW_FUNDED: 'bg-blue-500/20 text-blue-300 border-blue-500/40',
+              DELIVERABLE_CHANGES_REQUESTED: 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+              PAYOUT_RELEASED: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+            };
+            return `<span class="text-[10px] font-mono px-2 py-0.5 rounded-full border ${styles[s] || styles.NEGOTIATING}">${s}</span>`;
+          },
+        },
+        { field: 'project', headerName: 'Project & Client', flex: 1, minWidth: 150 },
+        {
+          field: 'amountNum',
+          headerName: 'USD',
+          width: 95,
+          valueFormatter: (p) => (p.value ? `$${Number(p.value).toFixed(2)}` : '—'),
+          cellClass: 'font-mono font-bold text-emerald-400',
+        },
+        {
+          field: 'invoiceStatus',
+          headerName: 'Invoice',
+          width: 105,
+          cellRenderer: (params) => {
+            if (!params.value || params.value === '—') return '<span class="text-slate-600">—</span>';
+            const isPaid = params.value === 'PAID';
+            return `<span class="text-[10px] font-mono px-2 py-0.5 rounded ${
+              isPaid ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-300'
+            }">${params.value}</span>`;
+          },
+        },
+        {
+          field: 'auditScoreNum',
+          headerName: 'AI Audit Confidence Bar',
+          width: 170,
+          cellRenderer: (params) => {
+            if (params.value == null) {
+              return `<span class="text-[11px] text-slate-500">Awaiting PR...</span>`;
+            }
+            const pass = params.data.auditVerified;
+            const color = pass ? 'bg-emerald-500' : 'bg-rose-500';
+            const textColor = pass ? 'text-emerald-400' : 'text-rose-400';
+            return `
+              <div class="flex items-center gap-2 w-full pr-2">
+                <div class="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div class="h-full ${color}" style="width: ${params.value}%"></div>
+                </div>
+                <span class="text-[11px] font-mono font-bold ${textColor}">${params.value}%</span>
+              </div>
+            `;
+          },
+        },
+        {
+          field: 'actions',
+          headerName: 'Nudge-Bot & Vault Actions',
+          width: 195,
+          sortable: false,
+          filter: false,
+          cellRenderer: (params) => {
+            const d = params.data;
+            if (d.invoiceStatus === 'SENT' || d.invoiceStatus === 'UNPAID') {
+              return `
+                <div class="flex items-center gap-1 pt-1">
+                  <button onclick="triggerFriendlyNudge('${d.dealId}')" class="text-[10px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2 py-1 rounded transition">
+                    👋 Nudge (${d.nudgeCount || 0})
+                  </button>
+                  <button onclick="fundEscrow('${d.dealId}')" class="text-[10px] bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded transition">
+                    💳 Fund
+                  </button>
+                </div>
+              `;
+            }
+            if (d.status === 'PAYOUT_RELEASED') {
+              return `<span class="text-[11px] font-mono text-emerald-400">✅ Batch ${d.payoutBatchId}</span>`;
+            }
+            if (d.invoiceStatus === 'PAID') {
+              return `<span class="text-[11px] text-blue-400">🔒 Vault Funded — Ready for PR</span>`;
+            }
+            return `<span class="text-[11px] text-slate-500">Negotiating terms...</span>`;
+          },
+        },
+      ],
+      rowData: [],
+    };
+
+    // =========================================================================
+    // 2. Initialize AG Charts Companion Financial Donut Widget
+    // =========================================================================
+    function initOrUpdateChart(unpaidTotal, fundedTotal, paidOutTotal) {
+      const data = [
+        { stage: 'Unpaid (Nudge Scoreboard)', amount: unpaidTotal || 0 },
+        { stage: 'Locked in Escrow Vault', amount: fundedTotal || 0 },
+        { stage: 'Released via Payouts', amount: paidOutTotal || 0 },
+      ];
+
+      // Provide a visual placeholder slice if all values are 0 on initial load
+      const hasData = unpaidTotal + fundedTotal + paidOutTotal > 0;
+      const chartData = hasData ? data : [{ stage: 'No Deals Yet', amount: 1 }];
+
+      const options = {
+        container: document.getElementById('escrowDistributionChart'),
+        background: { fill: 'transparent' },
+        data: chartData,
+        series: [
+          {
+            type: 'donut',
+            angleKey: 'amount',
+            calloutLabelKey: 'stage',
+            innerRadiusRatio: 0.62,
+            fills: hasData ? ['#f59e0b', '#3b82f6', '#10b981'] : ['#334155'],
+            strokes: ['#0f172a'],
+          },
+        ],
+        legend: {
+          enabled: true,
+          position: 'bottom',
+          item: { label: { color: '#94a3b8', fontSize: 10 } },
+        },
+      };
+
+      if (chartInstance) {
+        agCharts.AgCharts.update(chartInstance, options);
+      } else if (window.agCharts) {
+        chartInstance = agCharts.AgCharts.create(options);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const gridDiv = document.querySelector('#escrowLedgerGrid');
+      gridApi = agGrid.createGrid(gridDiv, gridOptions);
+      initOrUpdateChart(0, 0, 0);
+      checkPayPalHealth();
+      refreshDealsLedger();
+    });
+
+    async function checkPayPalHealth() {
+      try {
+        const res = await fetch('/api/health/paypal');
+        const data = await res.json();
+        const dot = document.getElementById('healthDot');
+        const text = document.getElementById('healthText');
+        if (data.status === 'success') {
+          dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+          text.textContent = `PayPal Sandbox Connected (${data.ai_provider} Ready)`;
+        } else {
+          dot.className = 'w-2 h-2 rounded-full bg-rose-500';
+          text.textContent = 'PayPal Sandbox Auth Error';
+        }
+      } catch (e) {
+        document.getElementById('healthText').textContent = 'Server Offline';
+      }
+    }
+
+    function getActiveDealId() {
+      return document.getElementById('dealIdInput').value.trim() || 'deal-201';
+    }
+
+    async function switchDeal(dealId) {
+      document.getElementById('dealIdInput').value = dealId;
+      const res = await fetch(`/api/deals/${dealId}`);
+      const data = await res.json();
+      if (data.status === 'success') {
+        renderDealState(data.deal);
+      }
+    }
+
+    function createNewDeal() {
+      const randomNum = Math.floor(200 + Math.random() * 799);
+      document.getElementById('dealIdInput').value = `deal-${randomNum}`;
+      document.getElementById('chatContainer').innerHTML = `
+        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-slate-300">
+          🆕 Started fresh escrow session <strong>deal-${randomNum}</strong>. Click <em>"Demo: Client Offer"</em> to begin!
+        </div>
+      `;
+      resetRightPanel();
+    }
+
+    function fillDemoMessage(role) {
+      const roleSelect = document.getElementById('senderRole');
+      const input = document.getElementById('chatInput');
+      if (role === 'client') {
+        roleSelect.value = 'Client';
+        input.value =
+          'Hi! I need an Express.js healthcheck endpoint at GET /healthz returning status 200 JSON with { status: "ok" }. Budget is $150 USD. My PayPal email is sb-wmllx53556913@business.example.com';
+      } else {
+        roleSelect.value = 'Freelancer';
+        input.value =
+          'I accept $150 USD to build the Express.js GET /healthz endpoint returning { status: "ok" }! My PayPal email is sb-z47l7753547825@personal.example.com, Let us lock the deal and generate the escrow invoice.';
+      }
+    }
+
+    function fillDemoProof(type) {
+      const urlInput = document.getElementById('githubUrlInput');
+      const proofInput = document.getElementById('proofTextInput');
+      if (type === 'fail') {
+        urlInput.value = '';
+        proofInput.value = '// TODO: will implement /healthz endpoint tomorrow\nconsole.log("placeholder");';
+      } else {
+        urlInput.value = 'https://github.com/Obumezi/paypact-ai/pull/1';
+        proofInput.value =
+          'app.get("/healthz", (req, res) => {\n  res.status(200).json({ status: "ok" });\n});';
+      }
+    }
+
+    async function sendNegotiationMessage(e) {
+      e.preventDefault();
+      const dealId = getActiveDealId();
+      const sender = document.getElementById('senderRole').value;
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const btn = document.getElementById('sendBtn');
+      btn.disabled = true;
+      btn.textContent = 'AI Thinking...';
+      input.value = '';
+
+      try {
+        const res = await fetch('/api/negotiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dealId, sender, text }),
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+          renderDealState(data.deal);
+          refreshDealsLedger();
+        } else {
+          alert('Error: ' + (data.message || 'Failed to negotiate'));
+        }
+      } catch (err) {
+        alert('Request error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send Turn';
+      }
+    }
+
+    // Trigger Nudge-Bot Friendly Reminder (From Card or Directly from AG Grid Row!)
+    async function triggerFriendlyNudge(dealId) {
+      const btn = document.getElementById('nudgeClientBtn');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = '👋 Drafting Nudge...';
+
+      try {
+        const res = await fetch(`/api/deals/${dealId}/nudge`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          document.getElementById('dealIdInput').value = dealId;
+          renderDealState(data.deal);
+          refreshDealsLedger();
+        } else {
+          alert('Nudge error: ' + data.message);
+        }
+      } catch (err) {
+        alert('Nudge error: ' + err.message);
+      } finally {
+        btn.textContent = originalText;
+      }
+    }
+
+    async function fundEscrow(targetDealId) {
+      const dealId = targetDealId || getActiveDealId();
+      const btn = document.getElementById('fundEscrowBtn');
+      btn.disabled = true;
+      btn.textContent = 'Recording PayPal Payment...';
+
+      try {
+        const res = await fetch(`/api/deals/${dealId}/fund`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+          document.getElementById('dealIdInput').value = dealId;
+          renderDealState(data.deal);
+          refreshDealsLedger();
+        } else {
+          alert('Funding error: ' + JSON.stringify(data.paypal_details || data.message));
+          btn.disabled = false;
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+        btn.disabled = false;
+      } finally {
+        btn.textContent = '💳 Confirm Escrow Payment';
+      }
+    }
+
+    async function verifyAndReleasePayout() {
+      const dealId = getActiveDealId();
+      const github_url = document.getElementById('githubUrlInput').value.trim();
+      const proof_text = document.getElementById('proofTextInput').value.trim();
+
+      const btn = document.getElementById('verifyPayoutBtn');
+      btn.disabled = true;
+      btn.textContent = '🤖 Auditing Code & Calling PayPal Payouts...';
+
+      try {
+        const res = await fetch(`/api/deals/${dealId}/verify-and-payout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ github_url, proof_text }),
+        });
+        const data = await res.json();
+        if (data.deal) {
+          renderDealState(data.deal);
+          refreshDealsLedger();
+        } else {
+          alert('Error: ' + data.message);
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔍 Run AI Deliverable Audit & Release PayPal Payout';
+      }
+    }
+
+    // =========================================================================
+    // 3. Natural-Language AG Grid Studio Agent Execution
+    // =========================================================================
+    function quickGridPrompt(promptText) {
+      document.getElementById('gridAgentInput').value = promptText;
+      runStudioGridAgent(new Event('submit'));
+    }
+
+    async function runStudioGridAgent(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('gridAgentInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const btn = document.getElementById('gridAgentBtn');
+      const replyEl = document.getElementById('gridAgentReply');
+      btn.disabled = true;
+      btn.textContent = 'Thinking...';
+
+      try {
+        const res = await fetch('/api/grid-agent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+        });
+        const data = await res.json();
+        if (data.status === 'success' && gridApi) {
+          const cmd = data.command;
+          replyEl.textContent = `🤖 ${cmd.assistant_explanation}`;
+
+          // Apply AG Grid Filter Model dynamically
+          const filterModel = {};
+          if (cmd.status_filter) {
+            filterModel.status = { filterType: 'text', type: 'equals', filter: cmd.status_filter };
+          }
+          if (cmd.invoice_status_filter) {
+            filterModel.invoiceStatus = {
+              filterType: 'text',
+              type: 'equals',
+              filter: cmd.invoice_status_filter,
+            };
+          }
+          gridApi.setFilterModel(filterModel);
+
+          // Apply AG Grid Sorting dynamically
+          if (cmd.sort_by_amount) {
+            gridApi.applyColumnState({
+              state: [{ colId: 'amountNum', sort: cmd.sort_by_amount }],
+              defaultState: { sort: null },
+            });
+          }
+
+          // Highlight matching KPI Widget Tile
+          const nudgeTile = document.getElementById('nudgeScoreboardWidget');
+          const anomalyTile = document.getElementById('anomalyAuditWidget');
+          nudgeTile.classList.remove('widget-glow-amber');
+          anomalyTile.classList.remove('widget-glow-rose');
+
+          if (cmd.active_widget_mode === 'NUDGE_SCOREBOARD') {
+            nudgeTile.classList.add('widget-glow-amber');
+          } else if (cmd.active_widget_mode === 'ANOMALY_AUDIT_WATCH') {
+            anomalyTile.classList.add('widget-glow-rose');
+          }
+        }
+      } catch (err) {
+        replyEl.textContent = '⚠️ Error running Studio Agent';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Execute on Grid';
+      }
+    }
+
+    function resetStudioGridFilters() {
+      if (!gridApi) return;
+      gridApi.setFilterModel(null);
+      gridApi.applyColumnState({ defaultState: { sort: null } });
+      document.getElementById('gridAgentReply').textContent = 'Showing all escrow deals.';
+      document.getElementById('nudgeScoreboardWidget').classList.remove('widget-glow-amber');
+      document.getElementById('anomalyAuditWidget').classList.remove('widget-glow-rose');
+    }
+
+    function renderDealState(deal) {
+      const chatContainer = document.getElementById('chatContainer');
+      chatContainer.innerHTML = deal.messages
+        .map((m) => {
+          const isAI = m.sender === 'PayPact AI';
+          const isClient = m.sender === 'Client';
+          const boxStyle = isAI
+            ? 'bg-indigo-950/60 border-indigo-500/40 text-indigo-100'
+            : isClient
+            ? 'bg-slate-900 border-blue-500/30 text-slate-200 ml-6'
+            : 'bg-slate-900 border-emerald-500/30 text-slate-200 mr-6';
+          const badgeColor = isAI
+            ? 'text-indigo-400'
+            : isClient
+            ? 'text-blue-400'
+            : 'text-emerald-400';
+
+          return `
+            <div class="p-3 rounded-xl border text-xs leading-relaxed ${boxStyle}">
+              <div class="font-bold text-[11px] mb-1 ${badgeColor}">${m.sender}</div>
+              <div>${m.text}</div>
+            </div>
+          `;
+        })
+        .join('');
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      const t = deal.contract_terms || {};
+      document.getElementById('termTitle').textContent = t.project_title || '—';
+      document.getElementById('termAmount').textContent =
+        t.agreed_amount_usd != null ? `$${Number(t.agreed_amount_usd).toFixed(2)} USD` : '—';
+      document.getElementById('termMilestone').textContent = t.milestone_description || '—';
+      document.getElementById('termClientEmail').textContent = t.client_paypal_email || '—';
+      document.getElementById('termFreelancerEmail').textContent = t.freelancer_paypal_email || '—';
+      document.getElementById('dealStatusBadge').textContent = deal.status;
+
+      updateStepper(deal.status);
+
+      const invBox = document.getElementById('invoiceDetailsBox');
+      const invBadge = document.getElementById('invoiceStatusBadge');
+      const fundBtn = document.getElementById('fundEscrowBtn');
+      const nudgeBtn = document.getElementById('nudgeClientBtn');
+      const viewLink = document.getElementById('viewInvoiceLink');
+      const verifyBtn = document.getElementById('verifyPayoutBtn');
+
+      if (deal.invoice) {
+        invBadge.textContent = deal.invoice.status;
+        const isPaid = deal.invoice.status === 'PAID';
+        invBadge.className = isPaid
+          ? 'text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+          : 'text-[11px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30';
+
+        invBox.innerHTML = `
+          <div class="flex justify-between"><span>Invoice ID:</span><span class="font-mono text-slate-200">${deal.invoice.invoice_id}</span></div>
+          <div class="flex justify-between"><span>Invoice #:</span><span class="font-mono text-slate-200">${deal.invoice.invoice_number}</span></div>
+        `;
+
+        if (deal.invoice.recipient_view_url) {
+          viewLink.href = deal.invoice.recipient_view_url;
+          viewLink.classList.remove('hidden');
+        }
+
+        fundBtn.disabled = isPaid;
+        nudgeBtn.disabled = isPaid;
+        verifyBtn.disabled = deal.payout != null;
+      }
+
+      const banner = document.getElementById('payoutResultBanner');
+      if (deal.payout) {
+        banner.classList.remove('hidden');
+        banner.className =
+          'p-2.5 rounded-lg text-xs border bg-emerald-950/60 border-emerald-500/40 text-emerald-200';
+        banner.innerHTML = `
+          <div class="font-bold text-emerald-400">✅ PayPal Payout Dispatched!</div>
+          <div class="mt-1 font-mono text-[11px]">Batch ID: ${deal.payout.payout_batch_id} | Status: ${deal.payout.batch_status}</div>
+          <div class="mt-0.5 text-[11px]">${deal.verification?.audit_summary || ''}</div>
+        `;
+      } else if (deal.verification && !deal.verification.verified) {
+        banner.classList.remove('hidden');
+        banner.className =
+          'p-2.5 rounded-lg text-xs border bg-rose-950/60 border-rose-500/40 text-rose-200';
+        banner.innerHTML = `
+          <div class="font-bold text-rose-400">⚠️ Deliverable Rejected by AI Auditor (${deal.verification.confidence_score}%)</div>
+          <div class="mt-1 text-[11px]">${deal.verification.audit_summary}</div>
+        `;
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function updateStepper(status) {
+      const s1 = document.getElementById('step-1');
+      const s2 = document.getElementById('step-2');
+      const s3 = document.getElementById('step-3');
+      const s4 = document.getElementById('step-4');
+      const base = 'p-3 rounded-xl border border-slate-800 bg-slate-900/60 flex items-center gap-3 ';
+
+      s1.className = base + (status === 'NEGOTIATING' ? 'step-active' : 'step-done');
+      s2.className =
+        base +
+        (status === 'ESCROW_INVOICED'
+          ? 'step-active'
+          : ['ESCROW_FUNDED', 'DELIVERABLE_CHANGES_REQUESTED', 'PAYOUT_RELEASED'].includes(status)
+          ? 'step-done'
+          : '');
+      s3.className =
+        base +
+        (['ESCROW_FUNDED', 'DELIVERABLE_CHANGES_REQUESTED'].includes(status)
+          ? 'step-active'
+          : status === 'PAYOUT_RELEASED'
+          ? 'step-done'
+          : '');
+      s4.className = base + (status === 'PAYOUT_RELEASED' ? 'step-done' : '');
+    }
+
+    function resetRightPanel() {
+      document.getElementById('termTitle').textContent = '—';
+      document.getElementById('termAmount').textContent = '—';
+      document.getElementById('termMilestone').textContent = '—';
+      document.getElementById('termClientEmail').textContent = '—';
+      document.getElementById('termFreelancerEmail').textContent = '—';
+      document.getElementById('dealStatusBadge').textContent = 'NEGOTIATING';
+      document.getElementById('invoiceStatusBadge').textContent = 'NO INVOICE';
+      document.getElementById('invoiceDetailsBox').innerHTML =
+        '<p class="text-[11px]">Lock contract terms in chat to automatically generate & send a PayPal Sandbox Invoice.</p>';
+      document.getElementById('fundEscrowBtn').disabled = true;
+      document.getElementById('nudgeClientBtn').disabled = true;
+      document.getElementById('verifyPayoutBtn').disabled = true;
+      document.getElementById('viewInvoiceLink').classList.add('hidden');
+      document.getElementById('payoutResultBanner').classList.add('hidden');
+      updateStepper('NEGOTIATING');
+    }
+
+    // =========================================================================
+    // 4. Sync Deals to AG Grid Custom Widgets, KPI Scoreboard & AG Charts
+    // =========================================================================
+    async function refreshDealsLedger() {
+      try {
+        const res = await fetch('/api/deals');
+        const data = await res.json();
+        if (data.status === 'success' && gridApi) {
+          let totalVolume = 0;
+          let unpaidTotal = 0;
+          let unpaidClients = [];
+          let fundedTotal = 0;
+          let paidOutTotal = 0;
+          let paidOutCount = 0;
+          let auditTotal = 0;
+          let auditPassed = 0;
+          let auditFailed = 0;
+
+          const rows = data.deals.map((d) => {
+            const amt = Number(d.contract_terms?.agreed_amount_usd || 0);
+            totalVolume += amt;
+
+            const invStatus = d.invoice?.status || '—';
+            if (invStatus === 'SENT' || invStatus === 'UNPAID') {
+              unpaidTotal += amt;
+              unpaidClients.push(d.contract_terms?.project_title || d.dealId);
+            } else if (invStatus === 'PAID' && !d.payout) {
+              fundedTotal += amt;
+            }
+
+            if (d.payout) {
+              paidOutTotal += amt;
+              paidOutCount++;
+            }
+
+            if (d.verification) {
+              auditTotal++;
+              if (d.verification.verified) auditPassed++;
+              else auditFailed++;
+            }
+
+            return {
+              dealId: d.dealId,
+              status: d.status,
+              project: d.contract_terms?.project_title || 'Negotiating...',
+              amountNum: amt || null,
+              invoiceId: d.invoice?.invoice_id || '—',
+              invoiceStatus: invStatus,
+              auditScoreNum: d.verification?.confidence_score ?? null,
+              auditVerified: d.verification?.verified ?? false,
+              payoutBatchId: d.payout?.payout_batch_id || '—',
+              nudgeCount: d.nudge_count || 0,
+            };
+          });
+
+          gridApi.setGridOption('rowData', rows);
+
+          // Update KPI Scoreboard Widgets
+          document.getElementById('kpiTotalVolume').textContent = `$${totalVolume.toFixed(2)}`;
+          document.getElementById('kpiDealCount').textContent = `${rows.length} active deal(s) tracked in AG Grid`;
+
+          document.getElementById('kpiUnpaidAmount').textContent = `$${unpaidTotal.toFixed(2)}`;
+          document.getElementById('kpiUnpaidNote').textContent =
+            unpaidClients.length > 0
+              ? `${unpaidClients.length} invoice(s) awaiting friendly nudge`
+              : 'All clients caught up! 🎉';
+
+          document.getElementById('kpiAuditPassRate').textContent =
+            auditTotal > 0 ? `${Math.round((auditPassed / auditTotal) * 100)}% Pass` : '—';
+          document.getElementById('kpiAuditFlags').textContent = `${auditFailed} failed PR deliverable(s) blocked`;
+
+          document.getElementById('kpiPayoutTotal').textContent = `$${paidOutTotal.toFixed(2)}`;
+          document.getElementById('kpiPayoutCount').textContent = `${paidOutCount} verified batch(es) settled`;
+
+          // Update AG Charts Donut Widget
+          initOrUpdateChart(unpaidTotal, fundedTotal, paidOutTotal);
+        }
+      } catch (e) {
+        console.error('Failed to load ledger:', e);
+      }
+    }
+  </script>
+</body>
+</html>
