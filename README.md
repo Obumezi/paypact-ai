@@ -99,39 +99,6 @@ Instead of a plain data table, we built an interactive **AG Grid & AG Charts Stu
 
 ---
 
-## 🏗️ System Architecture & State Machine
-
-```text
-[Stage 1: AI Negotiation Room]
-  Client & Freelancer negotiate in chat
-  └──► OpenAI Strict JSON Schema extracts 5 contract parameters:
-       (project_title, milestone_description, agreed_amount_usd, client_paypal_email, freelancer_paypal_email)
-                    │
-      (When agreement_reached === true)
-                    ▼
-[Stage 2: Autonomous Escrow Invoicing (PayPal Invoicing v2 API)]
-  ├──► POST /v2/invoicing/generate-next-invoice-number
-  ├──► POST /v2/invoicing/invoices (Creates Draft USD Invoice)
-  └──► POST /v2/invoicing/invoices/{id}/send (Sends Invoice to Client)
-                    │
-       ┌────────────┴────────────┐
-       ▼ (If Unpaid)             ▼ (When Paid)
-[Friendly Nudge-Bot]      [Stage 3: Escrow Vault Locked]
-  OpenAI drafts warm note   POST /v2/invoicing/invoices/{id}/payments
-  POST .../remind           Invoice status transitions SENT ──► PAID
-                                         │
-                                         ▼
-                          [Stage 4: AI Code Auditor & Auto-Payout]
-                            Fetches GitHub PR/commit diff & audits against milestone
-                                         │
-                    ┌────────────────────┴────────────────────┐
-                    ▼ (verified === false)                    ▼ (verified === true)
-         [Escrow Guardrail Holds Funds]            [PayPal Payouts v1 Dispatched]
-           Status: DELIVERABLE_CHANGES_REQUESTED     POST /v1/payments/payouts
-           Lists missing code requirements           Transfers USD directly to Freelancer
-
-
-
 ## 🛠️ Complete Setup and Run Instructions for Judges
 
 Judges can evaluate **PayPact AI** by accessing the live hosted application or running the source code locally.
@@ -296,3 +263,35 @@ After launching PayPact AI, verify that:
 ---
 
 **Built for developers, freelancers, and clients who want smarter, automated, and more secure milestone-based payments.**
+
+
+## 🏗️ System Architecture & State Machine
+
+```text
+[Stage 1: AI Negotiation Room]
+  Client & Freelancer negotiate in chat
+  └──► OpenAI Strict JSON Schema extracts 5 contract parameters:
+       (project_title, milestone_description, agreed_amount_usd, client_paypal_email, freelancer_paypal_email)
+                    │
+      (When agreement_reached === true)
+                    ▼
+[Stage 2: Autonomous Escrow Invoicing (PayPal Invoicing v2 API)]
+  ├──► POST /v2/invoicing/generate-next-invoice-number
+  ├──► POST /v2/invoicing/invoices (Creates Draft USD Invoice)
+  └──► POST /v2/invoicing/invoices/{id}/send (Sends Invoice to Client)
+                    │
+       ┌────────────┴────────────┐
+       ▼ (If Unpaid)             ▼ (When Paid)
+[Friendly Nudge-Bot]      [Stage 3: Escrow Vault Locked]
+  OpenAI drafts warm note   POST /v2/invoicing/invoices/{id}/payments
+  POST .../remind           Invoice status transitions SENT ──► PAID
+                                         │
+                                         ▼
+                          [Stage 4: AI Code Auditor & Auto-Payout]
+                            Fetches GitHub PR/commit diff & audits against milestone
+                                         │
+                    ┌────────────────────┴────────────────────┐
+                    ▼ (verified === false)                    ▼ (verified === true)
+         [Escrow Guardrail Holds Funds]            [PayPal Payouts v1 Dispatched]
+           Status: DELIVERABLE_CHANGES_REQUESTED     POST /v1/payments/payouts
+           Lists missing code requirements           Transfers USD directly to Freelancer
