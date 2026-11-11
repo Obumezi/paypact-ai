@@ -18,7 +18,7 @@
 3. [Why PayPact AI Matters (The Solution)](#-why-paypact-ai-matters-the-solution)
 4. [Key Features & 4-Stage Autonomous Workflow](#-key-features--4-stage-autonomous-workflow)
 5. [Best Use of AG Grid Showcase: AG Grid Studio & Custom Widgets](#-best-use-of-ag-grid-showcase-ag-grid-studio--custom-widgets)
-6. [Complete Setup and Run Instructions for Judges(#-Complete-Setup--and-Run-Instructions--for-judges)
+6. [Complete Setup and Run Instructions for Judges](#-Complete-Setup--and-Run-Instructions--for-judges)
 7. [Tools Used (PayPal APIs, AI Models & Sponsor Tools)](#-tools-used-paypal-apis-ai-models--sponsor-tools)
 8. [Alignment with Hackathon Judging Criteria](#-alignment-with-hackathon-judging-criteria)
 9. [60-Second Interactive Walkthrough for Judges](#-60-second-interactive-walkthrough-for-judges)
