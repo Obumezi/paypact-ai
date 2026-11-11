@@ -12,24 +12,24 @@
 
 ---
 
-## 📑 Table of Contents
-1. [Live Demo & Repository Links](#-live-demo--repository-links)
-2. [The Problem We Solve](#-the-problem-we-solve)
-3. [Why PayPact AI Matters (The Solution)](#-why-paypact-ai-matters-the-solution)
-4. [Key Features & 4-Stage Autonomous Workflow](#-key-features--4-stage-autonomous-workflow)
-5. [Best Use of AG Grid Showcase: AG Grid Studio & Custom Widgets](#-best-use-of-ag-grid-showcase-ag-grid-studio--custom-widgets)
-6. [Complete Setup and Run Instructions for Judges](#-Complete-Setup--and-Run-Instructions-for-judges)
-7. [Tools Used (PayPal APIs, AI Models & Sponsor Tools)](#-tools-used-paypal-apis-ai-models--sponsor-tools)
-8. [Alignment with Hackathon Judging Criteria](#-alignment-with-hackathon-judging-criteria)
-9. [60-Second Interactive Walkthrough for Judges](#-60-second-interactive-walkthrough-for-judges)
-10. [Local Setup & Installation Instructions](#-local-setup--installation-instructions)
-11. [Cloud Deployment on Render](#-cloud-deployment-on-render)
-12. [API Endpoints Reference](#-api-endpoints-reference)
-13. [License](#-license)
+## Table of Contents
+1. [Live Demo & Repository Links](#1-live-demo--repository-links)
+2. [The Problem We Solve](#2-the-problem-we-solve)
+3. [Why PayPact AI Matters (The Solution)](#3-why-paypact-ai-matters-the-solution)
+4. [Key Features & 4-Stage Autonomous Workflow](#4-key-features--4-stage-autonomous-workflow)
+5. [Best Use of AG Grid Showcase: AG Grid Studio & Custom Widgets](#5-best-use-of-ag-grid-showcase-ag-grid-studio--custom-widgets)
+6. [Complete Setup and Run Instructions for Judges](#6-complete-setup-and-run-instructions-for-judges)
+7. [Tools Used (PayPal APIs, AI Models & Sponsor Tools)](#7-tools-used-paypal-apis-ai-models--sponsor-tools)
+8. [Alignment with Hackathon Judging Criteria](#8-alignment-with-hackathon-judging-criteria)
+9. [60-Second Interactive Walkthrough for Judges](#9-60-second-interactive-walkthrough-for-judges)
+10. [Local Setup & Installation Instructions](#10-local-setup--installation-instructions)
+11. [Cloud Deployment on Render](#11-cloud-deployment-on-render)
+12. [API Endpoints Reference](#12-api-endpoints-reference)
+13. [License](#13-license)
 
 ---
 
-## 🌐 Live Demo & Repository Links
+## 1. Live Demo & Repository Links
 
 * **Live Hosted Demo URL (Render):** `https://paypact-ai.onrender.com` *(or run locally at `http://localhost:3000`)*
 * **Public GitHub Repository:** [https://github.com/Obumezi/paypact-ai](https://github.com/Obumezi/paypact-ai)
@@ -37,7 +37,7 @@
 
 ---
 
-## 🚨 The Problem We Solve
+## 2. The Problem We Solve
 
 Global freelance and peer-to-peer digital commerce suffers from a **$1.5T trust paradox**:
 1. **Upfront Payment Risk vs. Delivery Risk:** Clients hesitate to send money upfront before seeing working deliverables, while freelancers hesitate to write or ship production code before knowing funds are safely locked.
@@ -46,7 +46,7 @@ Global freelance and peer-to-peer digital commerce suffers from a **$1.5T trust 
 
 ---
 
-## 💡 Why PayPact AI Matters (The Solution)
+## 3. Why PayPact AI Matters (The Solution)
 
 PayPact AI transforms static payment links into **autonomous, self-enforcing financial contracts**:
 
@@ -59,213 +59,7 @@ PayPact AI transforms static payment links into **autonomous, self-enforcing fin
 
 ---
 
-## 🚀 Key Features & 4-Stage Autonomous Workflow
-
-### Stage 1: Multi-Party AI Contract Negotiation (`NEGOTIATING`)
-* Client and Freelancer negotiate scope, deliverables, and pricing in natural language inside the **Autonomous Negotiation Room**.
-* Using **OpenAI Strict Structured Outputs (`json_schema`)**, the agent dynamically extracts 5 mandatory contract parameters (`project_title`, `milestone_description`, `agreed_amount_usd`, `client_paypal_email`, `freelancer_paypal_email`), displaying live readiness checkmarks (`0/5` → `5/5 Ready`) on the UI.
-* The agent holds `agreement_reached: false` while terms are debated and flips to `agreement_reached: true` the exact moment both parties agree.
-
-### Stage 2: Autonomous Escrow Invoicing & Friendly Nudge-Bot (`ESCROW_INVOICED`)
-* The millisecond `agreement_reached` becomes `true`, the backend automatically calls the **PayPal Invoicing v2 API** to generate a sequential invoice number, create a draft escrow invoice, and dispatch it to the Client (`SENT` / `UNPAID`).
-* **👋 Friendly Nudge-Bot & Scoreboard:** If an invoice remains unpaid, users can trigger the **Nudge-Bot** directly from the vault card or inside the AG Grid ledger row. OpenAI drafts a friendly check-in message and dispatches it via PayPal's `/v2/invoicing/invoices/{id}/remind` endpoint.
-
-### Stage 3: Escrow Vault Lock (`ESCROW_FUNDED`)
-* Once the Client funds the invoice (verified or recorded via PayPal's `/v2/invoicing/invoices/{id}/payments` API), the invoice transitions to `PAID` and the funds are locked in the PayPact AI Escrow Vault.
-
-### Stage 4: Deterministic AI GitHub Code Auditing & Instant Payouts (`PAYOUT_RELEASED`)
-* The Freelancer submits a GitHub Pull Request URL, commit URL, or code snippet.
-* Our backend fetches the raw `.diff` or code content from GitHub and passes it to the **OpenAI Code Auditor**, which evaluates the implementation strictly against the locked `milestone_description`.
-* **🛡️ Escrow Guardrail:** If the code fails requirements, the AI sets `verified: false`, logs a low confidence score, and holds the funds in escrow (`DELIVERABLE_CHANGES_REQUESTED`).
-* **💸 Autonomous Release:** When the deliverable passes verification (`verified: true`), PayPact AI immediately calls the **PayPal Payouts v1 API** (`POST /v1/payments/payouts`) with an idempotent batch header, transferring the USD payout directly to the Freelancer's PayPal account.
-
----
-
-## 📊 Best Use of AG Grid Showcase: AG Grid Studio & Custom Widgets
-
-Instead of a plain data table, we built an interactive **AG Grid & AG Charts Studio Workspace** at the heart of the command center:
-
-* **Custom Cell Renderer Widgets (`cellRenderer`):**
-  * **Escrow Pipeline Pill Widget:** Color-coded state badges tracking each contract's lifecycle (`NEGOTIATING`, `ESCROW_INVOICED`, `ESCROW_FUNDED`, `DELIVERABLE_CHANGES_REQUESTED`, `PAYOUT_RELEASED`).
-  * **AI Audit Confidence Bar Widget:** Embedded horizontal progress bars (`0–100%`) visualizing OpenAI's code audit confidence inside every row (emerald for pass, rose for fail).
-  * **In-Row Nudge-Bot & Vault Action Widget:** Context-aware `👋 Nudge (count)` and `💳 Fund` action buttons rendered directly inside unpaid invoice rows.
-* **4 Live KPI & Friendly Scoreboard Tiles:** Real-time metric cards above the grid tracking:
-  1. *Total Contract Volume*
-  2. *👋 Friendly Nudge Scoreboard (Unpaid Invoices)* — styled as a friendly scoreboard showing who still owes what
-  3. *🛡️ AI Audit & Anomaly Watch (Escrow Guard)* — flags blocked PR deliverables
-  4. *PayPal Payouts Dispatched*
-* **Companion AG Charts Donut Widget:** Synchronizes dynamically with AG Grid row updates to visualize USD capital allocation across *Unpaid (Nudge Scoreboard)*, *Locked in Escrow Vault*, and *Released via Payouts*.
-* **Natural-Language Studio Grid Agent:** Users can ask plain-English questions (*"Show unpaid invoices that need a friendly nudge scoreboard"*, *"Flag failed AI audits"*, *"Show completed payouts sorted by highest amount"*) and OpenAI dynamically applies AG Grid `filterModel`, `columnState` sorting, and KPI widget glow highlights.
-
----
-
-## 🛠️ Complete Setup and Run Instructions for Judges
-
-Judges can evaluate **PayPact AI** by accessing the live hosted application or running the source code locally.
-
-### 🚀 Option A: Test the Live Hosted Demo (Instant)
-
-**Live Web App:** https://paypact-ai.onrender.com
-
-**Testing Guide:**
-
-Use the **⚡ Interactive Demo Guide** at the top of the dashboard to explore the complete five-step autonomous payment lifecycle:
-
-1. **Client Offer** — Create and submit a project offer.
-2. **Freelancer Acceptance & Auto-Invoice** — Accept the offer and automatically generate a PayPal invoice.
-3. **Escrow Funding** — Simulate funding the project through PayPal Sandbox.
-4. **AI Code Audit Guardrail** — Run an AI-powered code audit before payment release.
-5. **PayPal Payout** — Execute the payment workflow after successful verification.
-
-> **Note:** The demo uses PayPal Sandbox for testing. No real money is transferred.
-
----
-
-### 💻 Option B: Local Repository Setup & Execution
-
-#### Prerequisites
-
-Ensure you have the following:
-
-- **Node.js:** Version 18.0.0 or higher
-- **npm:** Included with Node.js
-- **Git:** For cloning the repository
-- **PayPal Developer Account:** [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/)
-- **OpenAI API Key:** [OpenAI Platform](https://platform.openai.com/api-keys)
-
-For PayPal, generate Sandbox credentials under **Apps & Credentials → Sandbox**.
-
-Ensure your Sandbox application has access to the required **Invoicing** and **Payouts** capabilities.
-
-#### Step 1: Clone the Repository
-
-Open Git Bash, PowerShell, or your preferred terminal.
-
-```bash
-git clone https://github.com/Obumezi/paypact-ai.git
-cd paypact-ai
-```
-
-#### Step 2: Install Dependencies
-
-Install the required Node.js packages:
-
-```bash
-npm install
-```
-
-#### Step 3: Configure Environment Variables
-
-Create a `.env` file from the provided `.env.example` template.
-
-**Linux / macOS / Git Bash:**
-
-```bash
-cp .env.example .env
-```
-
-**Windows PowerShell:**
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Open the `.env` file and configure your credentials:
-
-```env
-PORT=3000
-
-# PayPal Sandbox Configuration
-PAYPAL_API_BASE=https://api-m.sandbox.paypal.com
-PAYPAL_CLIENT_ID=your_paypal_sandbox_client_id
-PAYPAL_CLIENT_SECRET=your_paypal_sandbox_client_secret
-
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=gpt-4o-mini
-```
-
-> 🔒 **Security Notice:** Never commit your `.env` file or expose API keys publicly. Ensure `.env` is included in `.gitignore`.
-
-#### Step 4: Start the Application
-
-Start the Express server:
-
-```bash
-node server.js
-```
-
-Alternatively, run the development server with automatic reload:
-
-```bash
-npx nodemon server.js
-```
-
-#### Step 5: Access the Application
-
-Once the server starts successfully, open:
-
-**http://localhost:3000**
-
-You can now interact with the PayPact AI dashboard and test the complete autonomous payment workflow.
-
----
-
-
-### ✅ Quick Verification Checklist
-
-After launching PayPact AI, verify that:
-
-- [ ] The dashboard loads successfully.
-- [ ] The Interactive Demo Guide is accessible.
-- [ ] A client can create a project offer.
-- [ ] A freelancer can accept the offer.
-- [ ] A PayPal Sandbox invoice can be generated.
-- [ ] The escrow funding workflow operates correctly.
-- [ ] The AI code audit can evaluate submitted work.
-- [ ] The PayPal Sandbox payout workflow can be tested.
-
----
-
-### 🔗 Important Links
-
-| Resource | Link |
-|---|---|
-| Live Application | https://paypact-ai.onrender.com |
-| GitHub Repository | https://github.com/Obumezi/paypact-ai |
-
-
-
----
-
-### 💡 Troubleshooting
-
-**Application fails to start**
-
-- Confirm Node.js 18+ is installed.
-- Run `npm install` to install missing dependencies.
-- Verify that your `.env` file exists and contains the required variables.
-- Check that port `3000` is available.
-
-**PayPal API authentication fails**
-
-- Verify your PayPal Sandbox Client ID and Client Secret.
-- Ensure `PAYPAL_API_BASE` points to the Sandbox environment.
-- Confirm the required API capabilities are available.
-
-**AI audit fails**
-
-- Verify your OpenAI API key.
-- Ensure your OpenAI account has sufficient API credits.
-- Confirm the configured model is accessible to your API account.
-
-
----
-
-**Built for developers, freelancers, and clients who want smarter, automated, and more secure milestone-based payments.**
-
-
-## 🏗️ System Architecture & State Machine
+## 4. Key Features & 4-Stage Autonomous Workflow
 
 ```text
 [Stage 1: AI Negotiation Room]
@@ -295,3 +89,189 @@ After launching PayPact AI, verify that:
          [Escrow Guardrail Holds Funds]            [PayPal Payouts v1 Dispatched]
            Status: DELIVERABLE_CHANGES_REQUESTED     POST /v1/payments/payouts
            Lists missing code requirements           Transfers USD directly to Freelancer
+
+```
+
+- **Stage 1 — Multi-Party AI Contract Negotiation (**`NEGOTIATING`**):** Client and Freelancer negotiate scope and pricing in natural language. OpenAI extracts the 5 required contract parameters in real time, holding `agreement_reached: false` until all 5 fields are mutually confirmed.
+- **Stage 2 — Autonomous Escrow Invoicing & Friendly Nudge-Bot (**`ESCROW_INVOICED`**):** Once `agreement_reached` flips to `true`, the backend calls the **PayPal Invoicing v2 API** to generate an invoice number, create a draft invoice, and send it to the Client (`SENT`). Unpaid invoices can be nudged via the **👋 Nudge-Bot** (`/remind`).
+- **Stage 3 — Escrow Vault Lock (**`ESCROW_FUNDED`**):** When the Client pays the invoice (recorded via `/v2/invoicing/invoices/{id}/payments`), the invoice transitions to `PAID` and locks funds inside the PayPact Escrow Vault.
+- **Stage 4 — Deterministic AI GitHub Code Auditing & Instant Payouts (**`PAYOUT_RELEASED`**):** The Freelancer submits a GitHub PR URL or code snippet. OpenAI audits the diff against `milestone_description`. Incomplete code triggers the **Escrow Guardrail** (`DELIVERABLE_CHANGES_REQUESTED`), while verified code (`verified: true`) immediately triggers a **PayPal Payouts v1** batch transfer (`POST /v1/payments/payouts`).
+
+## 5. Best Use of AG Grid Showcase: AG Grid Studio & Custom Widgets
+
+Instead of a static table, we built an interactive **AG Grid & AG Charts Studio Workspace** at the heart of the command center:
+
+- **Custom Cell Renderer Widgets (**`cellRenderer`**):**
+  - **Escrow Pipeline Pill Widget:** Color-coded state badges tracking each contract's lifecycle (`NEGOTIATING`, `ESCROW_INVOICED`, `ESCROW_FUNDED`, `DELIVERABLE_CHANGES_REQUESTED`, `PAYOUT_RELEASED`).
+  - **AI Audit Confidence Bar Widget:** Embedded horizontal progress bars (`0–100%`) visualizing OpenAI's code audit confidence inside every row (emerald for pass, rose for fail).
+  - **In-Row Nudge-Bot & Vault Action Widget:** Context-aware `👋 Nudge` and `💳 Fund` action buttons rendered directly inside unpaid invoice rows.
+- **Live KPI & Friendly Scoreboard Tiles:** Real-time metric cards tracking *Total Contract Volume*, *Friendly Nudge Scoreboard (Unpaid Invoices)*, *AI Audit & Anomaly Watch (Escrow Guard)*, and *PayPal Payouts Dispatched*.
+- **Companion AG Charts Donut Widget:** Synchronizes dynamically with AG Grid row updates to visualize USD capital allocation across *Unpaid (Nudge Scoreboard)*, *Locked in Escrow Vault*, and *Released via Payouts*.
+- **Natural-Language Studio Grid Agent:** Translates plain-English queries (*"Show unpaid invoices needing a friendly nudge"*, *"Flag failed AI audits"*) into live AG Grid `filterModel` and `columnState` sorting configurations.
+
+## 6. Complete Setup and Run Instructions for Judges
+
+Judges can evaluate **PayPact AI** either by opening our live hosted web app or by running the repository locally in under 3 minutes:
+
+- **Option A — Instant Hosted Evaluation (Zero Setup):**
+  1. Open `https://paypact-ai.onrender.com` in your browser.
+  2. Follow the [60-Second Interactive Walkthrough](#9-60-second-interactive-walkthrough-for-judges) using the built-in 1-click **Demo** buttons (`Demo: Client Offer`, `Demo: Freelancer Accept`, `💳 Confirm Escrow Payment`, `Demo: Bad Code`, and `Demo: Valid PR`).
+- **Option B — Quick Local Build & Run:**
+
+  **Bash**
+  ```
+  git clone https://github.com/Obumezi/paypact-ai.git
+  cd paypact-ai
+  npm install
+  cp .env.example .env
+  # Add your PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, and OPENAI_API_KEY in .env
+  node server.js
+
+  ```
+  Then open `http://localhost:3000` in your browser. *(See [Section 10](#10-local-setup--installation-instructions) below for full step-by-step environment details.)*
+
+## 7. Tools Used (PayPal APIs, AI Models & Sponsor Tools)
+
+### 1. PayPal Developer Platform (Sandbox Environment — `api-m.sandbox.paypal.com`)
+
+Implemented in `paypal.js` using **OAuth 2.0 Client Credentials** (`POST /v1/oauth2/token`) and orchestrating **6 distinct PayPal REST API endpoints**:
+
+- `POST /v2/invoicing/generate-next-invoice-number` — Generates sequential invoice numbers for each locked AI contract.
+- `POST /v2/invoicing/invoices` — Creates structured USD escrow draft invoices containing the AI-extracted milestone specifications and recipient metadata.
+- `POST /v2/invoicing/invoices/{invoice_id}/send` — Automatically dispatches the escrow invoice to the Client upon negotiation lock and retrieves the `recipient_view_url`.
+- `POST /v2/invoicing/invoices/{invoice_id}/remind` — Powers our **Nudge-Bot**, sending warm AI-authored reminders for unpaid escrow invoices.
+- `GET /v2/invoicing/invoices/{invoice_id}` & `POST /v2/invoicing/invoices/{invoice_id}/payments` — Verifies and records escrow funding (`SENT` → `PAID`).
+- `POST /v1/payments/payouts` — Executes autonomous USD batch payouts to the Freelancer's PayPal Sandbox account the moment the AI Code Auditor verifies their deliverable.
+
+### 2. AI Service & Model: OpenAI (`gpt-4o-mini` with Strict Structured Outputs)
+
+Implemented in `agent.js` using the official `openai` Node.js SDK with **Strict JSON Schema Structured Outputs (**`response_format: { type: "json_schema", strict: true }`**)**:
+
+- **Autonomous Negotiation Mediator (**`processNegotiationTurn`**):** Parses multi-party chat transcripts to extract contract terms and deterministically trigger PayPal invoicing when `agreement_reached === true`.
+- **Deliverable & GitHub Code Auditor (**`verifyDeliverable`**):** Inspects fetched GitHub `.diff` patches and code submissions against the contract's `milestone_description`, returning `verified` (`boolean`), `confidence_score` (`0–100`), `audit_summary`, and `missing_requirements`.
+- **Friendly Nudge-Bot (**`generateFriendlyNudge`**):** Generates upbeat, zero-pressure payment heads-up messages for unpaid invoices.
+- **AG Grid Studio NL Agent (**`interpretGridCommand`**):** Translates natural-language user queries into structured AG Grid filter, sort, and widget spotlight configurations.
+
+### 3. Sponsor & Developer Tools Integrated
+
+- **AG Grid (**`ag-grid-community`**) & AG Charts (**`ag-charts-community`**):** Powers the **Autonomous Escrow & Payouts Ledger**, custom HTML cell renderers, KPI scoreboard widgets, and companion financial donut chart.
+- **Render (**`render.yaml`**):** Cloud application platform hosting our full-stack Node.js/Express web service and REST API endpoints.
+- **GitHub REST / Raw Diff Integration:** Used by the AI Code Auditor to fetch real pull request and commit diffs (`.diff`) for milestone verification.
+
+## 8. Alignment with Hackathon Judging Criteria
+
+| Judging Criteria                 | How PayPact AI Delivers                                                                                                                                                                                      |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Technological Implementation** | Deep, multi-endpoint integration with PayPal's Invoicing v2 and Payouts v1 REST APIs paired with 4 specialized OpenAI agents enforcing strict grammar-level JSON schemas.                                    |
+| **Design**                       | Cohesive dark glassmorphic command center with a 4-stage pipeline stepper, 1-click demo prefill buttons, real-time contract extraction cards, PayPal vault controls, and custom AG Grid & AG Charts widgets. |
+| **Potential Impact**             | Directly addresses the $1.5T global freelance trust gap, eliminating 5%–20% escrow middleman fees, manual dispute delays, and awkward invoice follow-ups.                                                    |
+| **Innovation / Idea**            | Moves beyond static payment buttons to true **Agentic Commerce**: an AI agent with autonomous financial authority to invoice, nudge, inspect code diffs, hold funds on failed audits, and release payouts.   |
+
+## 9. 60-Second Interactive Walkthrough for Judges
+
+Once you open the app (locally at `http://localhost:3000` or via our live Render URL), follow these 5 steps using the built-in **Demo** buttons:
+
+1. **Propose the Contract (Client):**
+   - In the top-right header of the chat panel, click `Demo: Client Offer`, then click `Send Turn`.
+   - Watch **Card 1 (Live Extracted Contract JSON)** on the right extract the Project Title, `$150.00 USD` amount, `/healthz` milestone criteria, and Client PayPal email while keeping the deal in `NEGOTIATING` state.
+2. **Accept Terms & Auto-Dispatch PayPal Invoice (Freelancer):**
+   - In the chat header, click `Demo: Freelancer Accept`, then click `Send Turn`.
+   - All 5 contract terms lock in! PayPact AI immediately calls the **PayPal Invoicing v2 API** and displays the real `INV2-...` Sandbox Invoice ID and `#PP-...` Invoice Number inside **Card 2 (PayPal Escrow Vault)**.
+   - *Optional Nudge-Bot Test:* Click `👋 Nudge-Bot Reminder` to generate a friendly AI reminder in chat and trigger PayPal's Invoice Remind API.
+3. **Fund the PayPal Escrow Vault:**
+   - In **Card 2 (PayPal Escrow Vault)**, click `💳 Confirm Escrow Payment`.
+   - The invoice status transitions from `SENT` to `PAID` (`ESCROW_FUNDED`), locking the `$150.00 USD` in the vault and unlocking the Deliverable Auditor below.
+4. **Test the AI Code Auditor Guardrail (Bad Code Blocked):**
+   - In **Card 3 (AI Deliverable Auditor & Payout)**, click `Demo: Bad Code` to fill the box with a `// TODO` placeholder snippet, then click `🔍 Run AI Deliverable Audit & Release PayPal Payout`.
+   - Watch the **OpenAI Code Auditor** reject the incomplete code (`⚠️ Deliverable Rejected by AI Auditor`) and block the payout so the Client's escrow funds remain safely locked.
+5. **Submit Valid Code & Trigger Instant PayPal Payout:**
+   - In **Card 3**, click `Demo: Valid PR` to populate the GitHub PR URL and valid Express.js `/healthz` route code, then click `🔍 Run AI Deliverable Audit & Release PayPal Payout`.
+   - Watch OpenAI verify the deliverable (`100% confidence`) and automatically trigger the **PayPal Payouts v1 API**, displaying the green `✅ PayPal Payout Dispatched!` banner with the live PayPal `Batch ID` and updating the **AG Grid Ledger** at the bottom of the page!
+
+## 10. Local Setup & Installation Instructions
+
+### Prerequisites
+
+- **Node.js** (v18.0.0 or higher) and `npm`
+- **PayPal Developer Account:** Free Sandbox `Client ID` and `Secret` from the [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/) (*Apps & Credentials → Sandbox → Create App*). Ensure **Invoicing** and **Payouts** are enabled.
+- **OpenAI API Key:** From the [OpenAI Platform](https://platform.openai.com/api-keys).
+
+### Step-by-Step Installation
+
+1. **Clone the repository:**
+
+   **Bash**
+   ```
+   git clone https://github.com/Obumezi/paypact-ai.git
+   cd paypact-ai
+
+   ```
+2. **Install dependencies:**
+
+   **Bash**
+   ```
+   npm install
+
+   ```
+3. **Configure environment variables:**
+
+   **Bash**
+   ```
+   cp .env.example .env
+
+   ```
+   Open `.env` and populate your credentials:
+
+   **Code snippet**
+   ```
+   PORT=3000
+   PAYPAL_API_BASE=https://api-m.sandbox.paypal.com
+   PAYPAL_CLIENT_ID=your_paypal_sandbox_client_id_here
+   PAYPAL_CLIENT_SECRET=your_paypal_sandbox_client_secret_here
+   OPENAI_API_KEY=sk-proj-your_openai_api_key_here
+   OPENAI_MODEL=gpt-4o-mini
+
+   ```
+4. **Start the application:**
+
+   **Bash**
+   ```
+   node server.js
+
+   ```
+   *(Or run with auto-reload during development: `npx nodemon server.js`)*
+5. **Open in browser:** Navigate to `http://localhost:3000`.
+
+## 11. Cloud Deployment on Render
+
+This repository includes a `render.yaml` Blueprint for rapid deployment on **Render**:
+
+1. Push this repository to GitHub (`https://github.com/Obumezi/paypact-ai`).
+2. Log into the [Render Dashboard](https://dashboard.render.com/) and click **New +** → **Web Service**.
+3. Connect your `paypact-ai` GitHub repository.
+4. Set **Build Command** to `npm install` and **Start Command** to `node server.js`.
+5. Add the following **Environment Variables** in Render:
+   - `PAYPAL_API_BASE` = `https://api-m.sandbox.paypal.com`
+   - `PAYPAL_CLIENT_ID` = *(Your PayPal Sandbox Client ID)*
+   - `PAYPAL_CLIENT_SECRET` = *(Your PayPal Sandbox Secret)*
+   - `OPENAI_API_KEY` = *(Your OpenAI API Key)*
+   - `OPENAI_MODEL` = `gpt-4o-mini`
+6. Click **Create Web Service** to generate your live public HTTPS URL.
+
+## 12. API Endpoints Reference
+
+| Method | Endpoint                               | Description                                                                                                     |
+| ------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `GET`  | `/api/health/paypal`                   | Verifies PayPal Sandbox OAuth 2.0 connection and OpenAI readiness.                                              |
+| `POST` | `/api/negotiate`                       | Processes a chat turn with OpenAI and auto-creates/sends a PayPal Invoice when `agreement_reached === true`.    |
+| `POST` | `/api/deals/:dealId/nudge`             | Generates a friendly Nudge-Bot reminder via OpenAI and calls PayPal's `/v2/invoicing/invoices/{id}/remind` API. |
+| `POST` | `/api/deals/:dealId/fund`              | Verifies or records Client escrow payment (`PAID`) via PayPal's `/v2/invoicing/invoices/{id}/payments` API.     |
+| `POST` | `/api/deals/:dealId/verify-and-payout` | Audits submitted GitHub URL/code with OpenAI and triggers `POST /v1/payments/payouts` if `verified === true`.   |
+| `POST` | `/api/grid-agent`                      | Translates natural-language queries into AG Grid filter, sort, and widget spotlight states.                     |
+| `POST` | `/api/seed`                            | Seeds multi-state sample deals into the AG Grid & AG Charts workspace for instant judge evaluation.             |
+| `GET`  | `/api/deals`                           | Returns all active escrow deals for the AG Grid ledger.                                                         |
+| `GET`  | `/api/deals/:dealId`                   | Returns full state, chat history, contract JSON, invoice, verification, and payout details for a single deal.   |
+
+## 13. License
+
+This project is open-source and distributed under the **MIT License**. See the [`LICENSE`](LICENSE) file for full details.
