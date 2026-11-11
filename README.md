@@ -20,12 +20,11 @@
 5. [Best Use of AG Grid Showcase: AG Grid Studio & Custom Widgets](#5-best-use-of-ag-grid-showcase-ag-grid-studio--custom-widgets)
 6. [Complete Setup and Run Instructions for Judges](#6-complete-setup-and-run-instructions-for-judges)
 7. [Tools Used (PayPal APIs, AI Models & Sponsor Tools)](#7-tools-used-paypal-apis-ai-models--sponsor-tools)
-8. [Alignment with Hackathon Judging Criteria](#8-alignment-with-hackathon-judging-criteria)
-9. [60-Second Interactive Walkthrough for Judges](#9-60-second-interactive-walkthrough-for-judges)
-10. [Local Setup & Installation Instructions](#10-local-setup--installation-instructions)
-11. [Cloud Deployment on Render](#11-cloud-deployment-on-render)
-12. [API Endpoints Reference](#12-api-endpoints-reference)
-13. [License](#13-license)
+8. [60-Second Interactive Walkthrough for Judges](#8-60-second-interactive-walkthrough-for-judges)
+9. [Local Setup & Installation Instructions](#9-local-setup--installation-instructions)
+10. [Cloud Deployment on Render](#10-cloud-deployment-on-render)
+11. [API Endpoints Reference](#11-api-endpoints-reference)
+12. [License](#12-license)
 
 ---
 
@@ -115,7 +114,7 @@ Judges can evaluate **PayPact AI** either by opening our live hosted web app or 
 
 - **Option A — Instant Hosted Evaluation (Zero Setup):**
   1. Open `https://paypact-ai.onrender.com` in your browser.
-  2. Follow the [60-Second Interactive Walkthrough](#9-60-second-interactive-walkthrough-for-judges) using the built-in 1-click **Demo** buttons (`Demo: Client Offer`, `Demo: Freelancer Accept`, `💳 Confirm Escrow Payment`, `Demo: Bad Code`, and `Demo: Valid PR`).
+  2. Follow the [60-Second Interactive Walkthrough](#8-60-second-interactive-walkthrough-for-judges) using the built-in 1-click **Demo** buttons (`Demo: Client Offer`, `Demo: Freelancer Accept`, `💳 Confirm Escrow Payment`, `Demo: Bad Code`, and `Demo: Valid PR`).
 - **Option B — Quick Local Build & Run:**
 
   **Bash**
@@ -128,7 +127,7 @@ Judges can evaluate **PayPact AI** either by opening our live hosted web app or 
   node server.js
 
   ```
-  Then open `http://localhost:3000` in your browser. *(See [Section 10](#10-local-setup--installation-instructions) below for full step-by-step environment details.)*
+  Then open `http://localhost:3000` in your browser. *(See [Section 9](#9-local-setup--installation-instructions) below for full step-by-step environment details.)*
 
 ## 7. Tools Used (PayPal APIs, AI Models & Sponsor Tools)
 
@@ -158,16 +157,7 @@ Implemented in `agent.js` using the official `openai` Node.js SDK with **Strict 
 - **Render (**`render.yaml`**):** Cloud application platform hosting our full-stack Node.js/Express web service and REST API endpoints.
 - **GitHub REST / Raw Diff Integration:** Used by the AI Code Auditor to fetch real pull request and commit diffs (`.diff`) for milestone verification.
 
-## 8. Alignment with Hackathon Judging Criteria
-
-| Judging Criteria                 | How PayPact AI Delivers                                                                                                                                                                                      |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Technological Implementation** | Deep, multi-endpoint integration with PayPal's Invoicing v2 and Payouts v1 REST APIs paired with 4 specialized OpenAI agents enforcing strict grammar-level JSON schemas.                                    |
-| **Design**                       | Cohesive dark glassmorphic command center with a 4-stage pipeline stepper, 1-click demo prefill buttons, real-time contract extraction cards, PayPal vault controls, and custom AG Grid & AG Charts widgets. |
-| **Potential Impact**             | Directly addresses the $1.5T global freelance trust gap, eliminating 5%–20% escrow middleman fees, manual dispute delays, and awkward invoice follow-ups.                                                    |
-| **Innovation / Idea**            | Moves beyond static payment buttons to true **Agentic Commerce**: an AI agent with autonomous financial authority to invoice, nudge, inspect code diffs, hold funds on failed audits, and release payouts.   |
-
-## 9. 60-Second Interactive Walkthrough for Judges
+## 8. 60-Second Interactive Walkthrough for Judges
 
 Once you open the app (locally at `http://localhost:3000` or via our live Render URL), follow these 5 steps using the built-in **Demo** buttons:
 
@@ -188,7 +178,7 @@ Once you open the app (locally at `http://localhost:3000` or via our live Render
    - In **Card 3**, click `Demo: Valid PR` to populate the GitHub PR URL and valid Express.js `/healthz` route code, then click `🔍 Run AI Deliverable Audit & Release PayPal Payout`.
    - Watch OpenAI verify the deliverable (`100% confidence`) and automatically trigger the **PayPal Payouts v1 API**, displaying the green `✅ PayPal Payout Dispatched!` banner with the live PayPal `Batch ID` and updating the **AG Grid Ledger** at the bottom of the page!
 
-## 10. Local Setup & Installation Instructions
+## 9. Local Setup & Installation Instructions
 
 ### Prerequisites
 
@@ -242,7 +232,7 @@ Once you open the app (locally at `http://localhost:3000` or via our live Render
    *(Or run with auto-reload during development: `npx nodemon server.js`)*
 5. **Open in browser:** Navigate to `http://localhost:3000`.
 
-## 11. Cloud Deployment on Render
+## 10. Cloud Deployment on Render
 
 This repository includes a `render.yaml` Blueprint for rapid deployment on **Render**:
 
@@ -258,7 +248,7 @@ This repository includes a `render.yaml` Blueprint for rapid deployment on **Ren
    - `OPENAI_MODEL` = `gpt-4o-mini`
 6. Click **Create Web Service** to generate your live public HTTPS URL.
 
-## 12. API Endpoints Reference
+## 11. API Endpoints Reference
 
 | Method | Endpoint                               | Description                                                                                                     |
 | ------ | -------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -272,6 +262,6 @@ This repository includes a `render.yaml` Blueprint for rapid deployment on **Ren
 | `GET`  | `/api/deals`                           | Returns all active escrow deals for the AG Grid ledger.                                                         |
 | `GET`  | `/api/deals/:dealId`                   | Returns full state, chat history, contract JSON, invoice, verification, and payout details for a single deal.   |
 
-## 13. License
+## 12. License
 
 This project is open-source and distributed under the **MIT License**. See the [`LICENSE`](LICENSE) file for full details.
